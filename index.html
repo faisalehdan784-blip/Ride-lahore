@@ -259,31 +259,39 @@ function showStatus(message) {
 }
 
 async function findPlace(place) {
-  const url =
-    "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=pk&q=" +
-    encodeURIComponent(place + ", Lahore, Pakistan");
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error("جگہ تلاش کرنے کی سروس دستیاب نہیں۔ دوبارہ کوشش کریں۔");
-  }
-
-  const results = await response.json();
-
-  if (!results.length) {
-    throw new Error(
-      "یہ جگہ نہیں ملی: " + place +
-      "۔ جگہ کا نام یا قریبی مشہور مقام درج کریں۔"
-    );
-  }
-
-  return [
-    Number(results[0].lat),
-    Number(results[0].lon)
+  const searchTerms = [
+    place + ", Lahore, Punjab, Pakistan",
+    place + ", Lahore, Pakistan"
   ];
-}
 
+  for (const term of searchTerms) {
+    const url =
+      "https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=pk&q=" +
+      encodeURIComponent(term);
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(
+        "جگہ تلاش کرنے کی سروس دستیاب نہیں۔ دوبارہ کوشش کریں۔"
+      );
+    }
+
+    const results = await response.json();
+
+    if (results.length > 0) {
+      return [
+        Number(results[0].lat),
+        Number(results[0].lon)
+      ];
+    }
+  }
+
+  throw new Error(
+    "یہ جگہ نہیں ملی: " + place +
+    "۔ جگہ کا نام انگریزی میں یا قریبی مشہور مقام کے ساتھ لکھیں۔"
+  );
+}
 form.addEventListener("submit", async function(e) {
   e.preventDefault();
 
