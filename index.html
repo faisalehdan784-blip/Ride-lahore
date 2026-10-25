@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ride Lahore</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172b4d}
+header{background:#102b50;color:white;text-align:center;padding:28px 15px}
+header h1{margin:0 0 8px;font-size:32px}
+header p{margin:0;color:#dce8f8}
+main{max-width:650px;margin:20px auto;padding:0 13px}
+.card{background:white;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 16px #0000000b}
+h2{margin-top:0;font-size:21px}
+label{display:block;font-weight:bold;margin:14px 0 7px}
+input,select{width:100%;padding:13px;border:1px solid #ccd5e2;border-radius:9px;font-size:16px;background:white}
+button{width:100%;padding:14px;border:0;border-radius:9px;background:#087f5b;color:white;font-size:16px;font-weight:bold;margin-top:18px}
+small{color:#657084;line-height:1.8}
+#result{display:none;background:#e9f8f0;padding:15px;border-radius:10px;margin-top:16px;line-height:2}
+.price{font-size:27px;font-weight:bold;color:#087f5b}
+footer{text-align:center;padding:22px;color:#657084;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>🚘 Ride Lahore</h1>
+<p>آپ کا سفر، آپ کی سواری</p>
+<p>Carpool • Rent a Car • Pick & Drop</p>
+</header>
+<main>
+<section class="card">
+<h2>اپنی رائیڈ کا کرایہ معلوم کریں</h2>
+<form id="fareForm">
+<label for="service">سروس</label>
+<select id="service">
+<option value="کارپول">کارپول — مشترکہ سواری</option>
+<option value="رینٹ اے کار">رینٹ اے کار — پرائیویٹ رائیڈ</option>
+</select>
+<label for="pickup">پک اَپ کی جگہ</label>
+<input id="pickup" placeholder="مثلاً اقبال ٹاؤن، لاہور" required>
+<label for="destination">منزل</label>
+<input id="destination" placeholder="مثلاً رائیونڈ روڈ، لاہور" required>
+<label for="distance">فاصلہ (کلومیٹر)</label>
+<input id="distance" type="number" min="1" max="500" step="0.1" placeholder="فاصلہ درج کریں" required>
+<label for="rate">فی کلومیٹر نرخ (روپے)</label>
+<input id="rate" type="number" min="1" value="60" required>
+<small>60 روپے صرف ابتدائی مثال ہے۔ فاصلہ ابھی خود درج کریں؛ لائیو نقشہ ابھی منسلک نہیں۔</small>
+<button type="submit">کرایہ معلوم کریں</button>
+</form>
+<div id="result" aria-live="polite">
+<div>کرایے کا تخمینہ</div>
+<div class="price" id="fare"></div>
+<div id="commission"></div>
+<div id="driverAmount"></div>
+<small>یہ تخمینہ ہے، حقیقی بکنگ یا ادائیگی نہیں ہوئی۔</small>
+<button type="button" id="whatsapp">WhatsApp پر رابطہ کریں</button>
+</div>
+</section>
+<section class="card">
+<h2>ہماری خدمات</h2>
+<p>✓ لاہور میں کارپول اور مشترکہ سفر</p>
+<p>✓ رینٹ اے کار اور پرائیویٹ پک اینڈ ڈراپ</p>
+<p>✓ کرایے کا واضح تخمینہ</p>
+<p>✓ ڈرائیور اور مسافر کی تصدیق — اگلے مرحلے میں</p>
+</section>
+<section class="card">
+<h2>پرائیویسی اور حفاظت</h2>
+<p>اس ابتدائی ورژن میں شناختی کارڈ یا لائسنس کی تصاویر جمع نہیں کی جاتیں۔ مکمل اکاؤنٹس سے پہلے محفوظ ڈیٹا بیس اور رسائی کے اصول شامل کیے جائیں گے۔</p>
+</section>
+</main>
+<footer>© 2026 Ride Lahore | Lahore, Pakistan</footer>
+<script>
+document.getElementById("fareForm").addEventListener("submit",function(e){
+e.preventDefault();
+const distance=Number(document.getElementById("distance").value);
+const rate=Number(document.getElementById("rate").value);
+if(distance<=0||rate<=0){alert("درست فاصلہ اور نرخ درج کریں");return}
+const fare=Math.round(distance*rate);
+const commission=Math.round(fare*0.05);
+const driver=fare-commission;
+document.getElementById("fare").textContent="Rs "+fare.toLocaleString("en-PK");
+document.getElementById("commission").textContent="آپ کا 5% کمیشن: Rs "+commission.toLocaleString("en-PK");
+document.getElementById("driverAmount").textContent="کمیشن کے بعد رقم: Rs "+driver.toLocaleString("en-PK");
+document.getElementById("result").style.display="block";
+document.getElementById("whatsapp").onclick=function(){
+const msg="Assalam-o-Alaikum, Ride Lahore inquiry\nService: "+document.getElementById("service").value+"\nPickup: "+document.getElementById("pickup").value+"\nDestination: "+document.getElementById("destination").value+"\nDistance: "+distance+" km\nEstimated fare: Rs "+fare;
+window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
+};
+});
+</script>
+</body>
+</html>
