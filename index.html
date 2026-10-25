@@ -3,91 +3,419 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ride Lahore</title>
+<title>Ride Lahore | Carpool & Rent a Car</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172b4d}
-header{background:#102b50;color:white;text-align:center;padding:28px 15px}
-header h1{margin:0 0 8px;font-size:32px}
-header p{margin:0;color:#dce8f8}
-main{max-width:650px;margin:20px auto;padding:0 13px}
-.card{background:white;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 16px #0000000b}
-h2{margin-top:0;font-size:21px}
-label{display:block;font-weight:bold;margin:14px 0 7px}
-input,select{width:100%;padding:13px;border:1px solid #ccd5e2;border-radius:9px;font-size:16px;background:white}
-button{width:100%;padding:14px;border:0;border-radius:9px;background:#087f5b;color:white;font-size:16px;font-weight:bold;margin-top:18px}
-small{color:#657084;line-height:1.8}
-#result{display:none;background:#e9f8f0;padding:15px;border-radius:10px;margin-top:16px;line-height:2}
-.price{font-size:27px;font-weight:bold;color:#087f5b}
-footer{text-align:center;padding:22px;color:#657084;font-size:13px}
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f6fb;
+  color: #172b4d;
+}
+
+header {
+  background: #102b50;
+  color: white;
+  text-align: center;
+  padding: 28px 15px;
+}
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: 32px;
+}
+
+header p {
+  margin: 8px 0 0;
+  color: #dce8f8;
+}
+
+main {
+  max-width: 650px;
+  margin: 20px auto;
+  padding: 0 13px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 16px #0000000b;
+}
+
+h2 { margin-top: 0; font-size: 21px; }
+
+label {
+  display: block;
+  font-weight: bold;
+  margin: 14px 0 7px;
+}
+
+input, select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ccd5e2;
+  border-radius: 9px;
+  font-size: 16px;
+  background: white;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 9px;
+  background: #087f5b;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 18px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+small {
+  color: #657084;
+  line-height: 1.8;
+  display: block;
+  margin-top: 10px;
+}
+
+#map {
+  height: 350px;
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 18px;
+  z-index: 1;
+}
+
+#result {
+  display: none;
+  background: #e9f8f0;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 16px;
+  line-height: 2;
+}
+
+.price {
+  font-size: 27px;
+  font-weight: bold;
+  color: #087f5b;
+}
+
+#status {
+  margin-top: 12px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+footer {
+  text-align: center;
+  padding: 22px;
+  color: #657084;
+  font-size: 13px;
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>🚘 Ride Lahore</h1>
-<p>آپ کا سفر، آپ کی سواری</p>
-<p>Carpool • Rent a Car • Pick & Drop</p>
+  <h1>🚘 Ride Lahore</h1>
+  <p>آپ کا سفر، آپ کی سواری</p>
+  <p>Carpool • Rent a Car • Pick & Drop</p>
 </header>
+
 <main>
+
 <section class="card">
-<h2>اپنی رائیڈ کا کرایہ معلوم کریں</h2>
-<form id="fareForm">
-<label for="service">سروس</label>
-<select id="service">
-<option value="کارپول">کارپول — مشترکہ سواری</option>
-<option value="رینٹ اے کار">رینٹ اے کار — پرائیویٹ رائیڈ</option>
-</select>
-<label for="pickup">پک اَپ کی جگہ</label>
-<input id="pickup" placeholder="مثلاً اقبال ٹاؤن، لاہور" required>
-<label for="destination">منزل</label>
-<input id="destination" placeholder="مثلاً رائیونڈ روڈ، لاہور" required>
-<label for="distance">فاصلہ (کلومیٹر)</label>
-<input id="distance" type="number" min="1" max="500" step="0.1" placeholder="فاصلہ درج کریں" required>
-<label for="rate">فی کلومیٹر نرخ (روپے)</label>
-<input id="rate" type="number" min="1" value="60" required>
-<small>60 روپے صرف ابتدائی مثال ہے۔ فاصلہ ابھی خود درج کریں؛ لائیو نقشہ ابھی منسلک نہیں۔</small>
-<button type="submit">کرایہ معلوم کریں</button>
-</form>
-<div id="result" aria-live="polite">
-<div>کرایے کا تخمینہ</div>
-<div class="price" id="fare"></div>
-<div id="commission"></div>
-<div id="driverAmount"></div>
-<small>یہ تخمینہ ہے، حقیقی بکنگ یا ادائیگی نہیں ہوئی۔</small>
-<button type="button" id="whatsapp">WhatsApp پر رابطہ کریں</button>
-</div>
+  <h2>اپنی رائیڈ کا کرایہ معلوم کریں</h2>
+
+  <form id="fareForm">
+
+    <label for="service">سروس منتخب کریں</label>
+    <select id="service">
+      <option value="کارپول">کارپول — مشترکہ سواری</option>
+      <option value="رینٹ اے کار">رینٹ اے کار — پرائیویٹ رائیڈ</option>
+    </select>
+
+    <label for="pickup">پک اَپ کی جگہ</label>
+    <input id="pickup"
+      placeholder="مثلاً اقبال ٹاؤن، لاہور"
+      required>
+
+    <label for="destination">منزل</label>
+    <input id="destination"
+      placeholder="مثلاً رائیونڈ روڈ، لاہور"
+      required>
+
+    <label for="distance">فاصلہ (کلومیٹر)</label>
+    <input id="distance"
+      type="number"
+      min="0.1"
+      max="500"
+      step="0.1"
+      placeholder="نقشے سے خود معلوم ہوگا"
+      readonly>
+
+    <label for="rate">فی کلومیٹر نرخ (روپے)</label>
+    <input id="rate"
+      type="number"
+      min="1"
+      max="100000"
+      value="60"
+      required>
+
+    <small>
+      ابتدائی تخمینہ 60 روپے فی کلومیٹر ہے۔
+      فاصلہ سڑک کے راستے سے معلوم کرنے کی کوشش ہوگی۔
+    </small>
+
+    <button id="fareButton" type="submit">
+      فاصلہ اور کرایہ معلوم کریں
+    </button>
+
+  </form>
+
+  <div id="map"></div>
+  <div id="status" role="status" aria-live="polite">
+    نقشہ لوڈ ہو رہا ہے۔ راستہ معلوم کرنے کے لیے
+    پک اَپ اور منزل درج کریں۔
+  </div>
+
+  <div id="result" aria-live="polite">
+    <div>کرایے کا تخمینہ</div>
+    <div class="price" id="fare"></div>
+    <div id="distanceResult"></div>
+    <div id="commission"></div>
+    <div id="driverAmount"></div>
+
+    <small>
+      یہ صرف تخمینہ ہے۔ اس سے حقیقی بکنگ یا ادائیگی نہیں ہوتی۔
+      5% کمیشن حساب میں دکھایا گیا ہے، خودکار طور پر وصول نہیں ہوتا۔
+    </small>
+
+    <button type="button" id="whatsapp">
+      WhatsApp پر رائیڈ کی تفصیل بھیجیں
+    </button>
+  </div>
 </section>
+
 <section class="card">
-<h2>ہماری خدمات</h2>
-<p>✓ لاہور میں کارپول اور مشترکہ سفر</p>
-<p>✓ رینٹ اے کار اور پرائیویٹ پک اینڈ ڈراپ</p>
-<p>✓ کرایے کا واضح تخمینہ</p>
-<p>✓ ڈرائیور اور مسافر کی تصدیق — اگلے مرحلے میں</p>
+  <h2>ہماری خدمات</h2>
+  <p>✓ لاہور میں کارپول اور مشترکہ سفر</p>
+  <p>✓ رینٹ اے کار اور پرائیویٹ پک اینڈ ڈراپ</p>
+  <p>✓ راستے کے مطابق کرایے کا تخمینہ</p>
+  <p>✓ ڈرائیور اور مسافر کی تصدیق — اگلے مرحلے میں</p>
 </section>
+
 <section class="card">
-<h2>پرائیویسی اور حفاظت</h2>
-<p>اس ابتدائی ورژن میں شناختی کارڈ یا لائسنس کی تصاویر جمع نہیں کی جاتیں۔ مکمل اکاؤنٹس سے پہلے محفوظ ڈیٹا بیس اور رسائی کے اصول شامل کیے جائیں گے۔</p>
+  <h2>پرائیویسی اور حفاظت</h2>
+  <p>
+    اس ابتدائی ورژن میں شناختی کارڈ، لائسنس یا گاڑی کی تصاویر
+    جمع نہیں کی جاتیں۔ مکمل اکاؤنٹس بنانے سے پہلے محفوظ ڈیٹا بیس،
+    تصدیق اور رسائی کے اصول شامل کرنا ضروری ہے۔
+  </p>
 </section>
+
 </main>
-<footer>© 2026 Ride Lahore | Lahore, Pakistan</footer>
+
+<footer>
+  © 2026 Ride Lahore | Lahore, Pakistan
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-document.getElementById("fareForm").addEventListener("submit",function(e){
-e.preventDefault();
-const distance=Number(document.getElementById("distance").value);
-const rate=Number(document.getElementById("rate").value);
-if(distance<=0||rate<=0){alert("درست فاصلہ اور نرخ درج کریں");return}
-const fare=Math.round(distance*rate);
-const commission=Math.round(fare*0.05);
-const driver=fare-commission;
-document.getElementById("fare").textContent="Rs "+fare.toLocaleString("en-PK");
-document.getElementById("commission").textContent="آپ کا 5% کمیشن: Rs "+commission.toLocaleString("en-PK");
-document.getElementById("driverAmount").textContent="کمیشن کے بعد رقم: Rs "+driver.toLocaleString("en-PK");
-document.getElementById("result").style.display="block";
-document.getElementById("whatsapp").onclick=function(){
-const msg="Assalam-o-Alaikum, Ride Lahore inquiry\nService: "+document.getElementById("service").value+"\nPickup: "+document.getElementById("pickup").value+"\nDestination: "+document.getElementById("destination").value+"\nDistance: "+distance+" km\nEstimated fare: Rs "+fare;
-window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
-};
+const map = L.map("map").setView([31.5204, 74.3587], 11);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap contributors",
+  maxZoom: 19
+}).addTo(map);
+
+let routeLayer = null;
+let pickupMarker = null;
+let destinationMarker = null;
+let lastRide = null;
+
+const form = document.getElementById("fareForm");
+const fareButton = document.getElementById("fareButton");
+const statusBox = document.getElementById("status");
+
+function showStatus(message) {
+  statusBox.textContent = message;
+}
+
+async function findPlace(place) {
+  const url =
+    "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=pk&q=" +
+    encodeURIComponent(place + ", Lahore, Pakistan");
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("جگہ تلاش کرنے کی سروس دستیاب نہیں۔ دوبارہ کوشش کریں۔");
+  }
+
+  const results = await response.json();
+
+  if (!results.length) {
+    throw new Error(
+      "یہ جگہ نہیں ملی: " + place +
+      "۔ جگہ کا نام یا قریبی مشہور مقام درج کریں۔"
+    );
+  }
+
+  return [
+    Number(results[0].lat),
+    Number(results[0].lon)
+  ];
+}
+
+form.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const pickup = document.getElementById("pickup").value.trim();
+  const destination = document.getElementById("destination").value.trim();
+  const rate = Number(document.getElementById("rate").value);
+
+  if (!pickup || !destination || !Number.isFinite(rate) || rate <= 0) {
+    showStatus("پک اَپ، منزل اور درست نرخ درج کریں۔");
+    return;
+  }
+
+  fareButton.disabled = true;
+  fareButton.textContent = "راستہ تلاش ہو رہا ہے...";
+  showStatus("پہلے پک اَپ اور منزل تلاش کی جا رہی ہیں۔");
+
+  try {
+    const start = await findPlace(pickup);
+    showStatus("پک اَپ مل گیا۔ اب منزل تلاش ہو رہی ہے۔");
+
+    const end = await findPlace(destination);
+
+    const routeUrl =
+      "https://router.project-osrm.org/route/v1/driving/" +
+      start[1] + "," + start[0] + ";" +
+      end[1] + "," + end[0] +
+      "?overview=full&geometries=geojson";
+
+    showStatus("سڑک کا راستہ اور فاصلہ معلوم ہو رہا ہے...");
+
+    const response = await fetch(routeUrl);
+
+    if (!response.ok) {
+      throw new Error("راستے کی سروس دستیاب نہیں۔ کچھ دیر بعد کوشش کریں۔");
+    }
+
+    const data = await response.json();
+
+    if (data.code !== "Ok" || !data.routes || !data.routes.length) {
+      throw new Error("اس سفر کا ڈرائیونگ راستہ نہیں ملا۔");
+    }
+
+    const route = data.routes[0];
+    const distance = Math.round(route.distance / 100) / 10;
+
+    if (!Number.isFinite(distance) || distance <= 0 || distance > 500) {
+      throw new Error("حاصل شدہ فاصلہ درست نہیں یا 500 کلومیٹر سے زیادہ ہے۔");
+    }
+
+    const fare = Math.round(distance * rate);
+    const commission = Math.round(fare * 0.05);
+    const driver = fare - commission;
+
+    document.getElementById("distance").value = distance;
+
+    if (routeLayer) map.removeLayer(routeLayer);
+    if (pickupMarker) map.removeLayer(pickupMarker);
+    if (destinationMarker) map.removeLayer(destinationMarker);
+
+    pickupMarker = L.marker(start)
+      .addTo(map)
+      .bindPopup("پک اَپ: " + pickup);
+
+    destinationMarker = L.marker(end)
+      .addTo(map)
+      .bindPopup("منزل: " + destination);
+
+    routeLayer = L.geoJSON(route.geometry, {
+      style: {
+        color: "#087f5b",
+        weight: 5
+      }
+    }).addTo(map);
+
+    map.fitBounds(routeLayer.getBounds(), {
+      padding: [20, 20]
+    });
+
+    document.getElementById("fare").textContent =
+      "Rs " + fare.toLocaleString("en-PK");
+
+    document.getElementById("distanceResult").textContent =
+      "راستے کا فاصلہ: " + distance + " کلومیٹر";
+
+    document.getElementById("commission").textContent =
+      "5% کمیشن: Rs " + commission.toLocaleString("en-PK");
+
+    document.getElementById("driverAmount").textContent =
+      "کمیشن کے بعد رقم: Rs " + driver.toLocaleString("en-PK");
+
+    document.getElementById("result").style.display = "block";
+
+    lastRide = {
+      service: document.getElementById("service").value,
+      pickup,
+      destination,
+      distance,
+      fare,
+      commission,
+      driver
+    };
+
+    showStatus("راستہ اور کرایے کا تخمینہ تیار ہے۔");
+  } catch (error) {
+    showStatus(error.message || "مسئلہ پیش آیا۔ دوبارہ کوشش کریں۔");
+  } finally {
+    fareButton.disabled = false;
+    fareButton.textContent = "فاصلہ اور کرایہ معلوم کریں";
+  }
+});
+
+document.getElementById("whatsapp").addEventListener("click", function() {
+  if (!lastRide) {
+    showStatus("پہلے رائیڈ کا فاصلہ اور کرایہ معلوم کریں۔");
+    return;
+  }
+
+  const ride = lastRide;
+
+  const message =
+    "Assalam-o-Alaikum, Ride Lahore inquiry\n" +
+    "Service: " + ride.service + "\n" +
+    "Pickup: " + ride.pickup + "\n" +
+    "Destination: " + ride.destination + "\n" +
+    "Distance: " + ride.distance + " km\n" +
+    "Estimated fare: Rs " + ride.fare + "\n" +
+    "Estimated 5% commission: Rs " + ride.commission;
+
+  const url = "https://wa.me/?text=" + encodeURIComponent(message);
+  window.open(url, "_blank", "noopener,noreferrer");
 });
 </script>
+
 </body>
 </html>
