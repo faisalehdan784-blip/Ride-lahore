@@ -382,7 +382,7 @@ form.addEventListener("submit", async function(e) {
     const driver = fare - commission;
 
     document.getElementById("distance").value = distance;
-
+    window.lastRideFare = { distance, fare, commission, driver };
     if (routeLayer) map.removeLayer(routeLayer);
     if (pickupMarker) map.removeLayer(pickupMarker);
     if (destinationMarker) map.removeLayer(destinationMarker);
@@ -477,7 +477,11 @@ document.getElementById("whatsapp").addEventListener("click", function() {
     "Pickup: " + pickup + "\n" +
     "Destination: " + destination + "\n" +
     "Date: " + date + "\n" +
-    "Time: " + time;
+    "Time: " + time + "\n" +
+    "Distance: " + (window.lastRideFare ? window.lastRideFare.distance.toFixed(1) + " km" : "Abhi calculate nahi hua") + "\n" +
+    "Estimated Fare: " + (window.lastRideFare ? "Rs " + window.lastRideFare.fare.toLocaleString("en-PK") : "Pehle route ka fare calculate karein") + "\n" +
+    "5% Commission: " + (window.lastRideFare ? "Rs " + window.lastRideFare.commission.toLocaleString("en-PK") : "N/A") + "\n" +
+    "Driver Amount: " + (window.lastRideFare ? "Rs " + window.lastRideFare.driver.toLocaleString("en-PK") : "N/A");
 
   const url = "https://wa.me/923091588042?text=" + encodeURIComponent(message);
   window.open(url, "_blank", "noopener,noreferrer");
